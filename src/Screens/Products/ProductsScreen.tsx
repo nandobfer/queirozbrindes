@@ -8,29 +8,34 @@ import { ProductItem } from "./ProductItem"
 import { FAB, Text } from "react-native-paper"
 import { useFocusEffect } from "@react-navigation/native"
 
+
 interface ProductsScreenProps {
     navigation: StackNavigation
     route: StackRoute
 }
 
 export const ProductsScreen: React.FC<ProductsScreenProps> = (props) => {
-    
-    const { data: order, refetch, isFetching } = useQuery<Order>({
+    const {
+        data: order,
+        refetch,
+        isFetching,
+    } = useQuery<Order>({
         queryKey: ["orderDetails"],
         queryFn: async () => (await api.get(`/order`, { params: { order_id: props.route.params?.order?.id } })).data,
         initialData: props.route.params?.order as Order,
     })
 
-    useFocusEffect(useCallback(() => {
-        refetch()
-    }, []))
-    
+    useFocusEffect(
+        useCallback(() => {
+            refetch()
+        }, [])
+    )
 
     return (
         <View style={[{ flex: 1 }]}>
             <FlatList
                 data={order.items}
-                renderItem={({ item }) => <ProductItem product={item} />}
+                renderItem={({ item }) => <ProductItem product={item} onDelete={refetch} order={order} />}
                 ListEmptyComponent={
                     <View>
                         <Text>Nenhum produto para mostrar</Text>
@@ -39,6 +44,7 @@ export const ProductsScreen: React.FC<ProductsScreenProps> = (props) => {
                 contentContainerStyle={{ gap: 20, padding: 20 }}
                 refreshing={isFetching}
                 onRefresh={refetch}
+                keyExtractor={(item) => item.id}
             />
 
             <FAB

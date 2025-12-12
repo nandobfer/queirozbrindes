@@ -7,9 +7,9 @@ import { Item } from "../../types/server/class/Item"
 import { FormText } from "../../components/FormText"
 import * as Yup from "yup"
 import { currencyMask } from "../../tools/currencyMask"
-import { uniqueId } from "lodash"
 import { api } from "../../backend/api"
 import { Order } from "../../types/server/class/Order"
+import { uid } from "uid"
 
 interface ProductFormScreenProps {
     navigation: StackNavigation
@@ -29,7 +29,7 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
         async onSubmit(values, formikHelpers) {
             const productToAdd: Item = {
                 ...values,
-                id: uniqueId(),
+                id: uid(),
             }
             try {
                 const response = await api.post<Order>("/order/item", productToAdd, { params: { order_id } })

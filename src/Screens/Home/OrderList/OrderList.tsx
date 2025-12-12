@@ -14,15 +14,16 @@ export const OrderList: React.FC<OrderListProps> = (props) => {
     return (
         <FlatList
             data={props.orders.sort((a, b) => b.order_date - a.order_date)}
-            renderItem={({ item }) => <OrderCard order={item} />}
+            renderItem={({ item }) => <OrderCard order={item} onDelete={props.refetch} />}
             ListEmptyComponent={
                 <View>
                     <Text>Nenhum pedido para mostrar</Text>
                 </View>
             }
-            contentContainerStyle={{ padding: 20 }}
+            contentContainerStyle={{ padding: 20, gap: 20 }}
             refreshing={props.isFetching}
             onRefresh={props.refetch}
+            keyExtractor={(item) => item.id}
         />
     )
 }
