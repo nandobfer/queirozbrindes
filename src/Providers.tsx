@@ -6,6 +6,8 @@ import { PaperProvider, Text } from "react-native-paper"
 import constants from "expo-constants"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { NavigationContainer } from "@react-navigation/native"
+import { MD3LightTheme as DefaultTheme, MD3Theme, configureFonts } from "react-native-paper"
+import { DefaultTheme as NavigationTheme } from "@react-navigation/native"
 
 interface ProvidersProps {
     children?: React.ReactNode
@@ -13,7 +15,7 @@ interface ProvidersProps {
 
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
     return (
-        <NavigationContainer>
+        <NavigationContainer theme={{ ...NavigationTheme, colors: { ...NavigationTheme.colors, background: DefaultTheme.colors.background } }}>
             <QueryClientProvider client={new QueryClient()}>
                 <PaperProvider>
                     <SnackbarProvider>

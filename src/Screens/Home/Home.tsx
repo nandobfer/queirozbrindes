@@ -19,15 +19,15 @@ export const Home: React.FC<HomeProps> = ({ navigation }) => {
         { key: "orders", title: "Pedidos", focusedIcon: "archive-check", unfocusedIcon: "archive-check-outline" },
     ])
 
-    const { data, isFetching } = useQuery<Order[]>({
+    const { data, isFetching, refetch } = useQuery<Order[]>({
         initialData: [],
         queryKey: ["ordersData", tabIndex],
         queryFn: async () => (await api.get("/order")).data,
         refetchOnWindowFocus: true,
     })
 
-    const Orders = () => <OrderList orders={data.filter((item) => item.type === "order")} />
-    const Budgets = () => <OrderList orders={data.filter((item) => item.type === "budget")} />
+    const Orders = () => <OrderList orders={data.filter((item) => item.type === "order")} isFetching={isFetching} refetch={refetch} />
+    const Budgets = () => <OrderList orders={data.filter((item) => item.type === "budget")} isFetching={isFetching} refetch={refetch} />
 
     const renderScene = BottomNavigation.SceneMap({
         budgets: Budgets,
@@ -36,6 +36,7 @@ export const Home: React.FC<HomeProps> = ({ navigation }) => {
 
     useFocusEffect(
         useCallback(() => {
+            refetch()
             const onBackPress = () => {
                 LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut)
                 return true

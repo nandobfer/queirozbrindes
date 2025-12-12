@@ -2,7 +2,7 @@ import React, { useState } from "react"
 import { Pressable, ScrollView, View } from "react-native"
 import { SelectComponent } from "../../components/SelectComponent"
 import { useFormik } from "formik"
-import { DeliveryDate, OrderForm, OrderType } from "../../types/server/class/Order"
+import { DeliveryDate, Order, OrderForm, OrderType } from "../../types/server/class/Order"
 import { useQuery } from "@tanstack/react-query"
 import { api } from "../../backend/api"
 import { FormText } from "../../components/FormText"
@@ -20,11 +20,10 @@ const orderTypes: { value: OrderType; label: string }[] = [
     { label: "Pedido", value: "order" },
 ]
 
-export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({navigation}) => {
+export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation }) => {
     const [selectDate, setSelectDate] = useState<"order_date" | "delivery_date_from" | "delivery_date_to" | null>(null)
     const [deliveryDate, setDeliveryDate] = useState<DeliveryDate>({ from: 0, to: 0 })
     const [posting, setPosting] = useState(false)
-
 
     const { data: nextAvailableNumber, isFetching } = useQuery<number>({
         initialData: 0,
@@ -45,8 +44,8 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({navigation}) =>
             if (posting) return
             setPosting(true)
             try {
-                const response = await api.post("/order", values)
-                navigation.navigate('123')
+                const response = await api.post<Order>("/order", values)
+                navigation.navigate("Products", { order: response.data })
             } catch (error) {
                 console.log(error)
             } finally {
@@ -126,7 +125,13 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({navigation}) =>
                 </Pressable>
             </View>
 
-            <Button mode="contained" onPress={() => formik.handleSubmit()} loading={posting} disabled={isFetching || posting} style={{ marginTop: 20 }}>
+            <Button
+                mode="contained"
+                onPress={() => formik.handleSubmit()}
+                loading={posting}
+                disabled={isFetching || posting}
+                style={{ marginTop: 20 }}
+            >
                 Continuar
             </Button>
 
