@@ -3,9 +3,8 @@ export declare type WithoutFunctions<T> = {
 };
 export declare interface FileUpload {
     file?: ArrayBuffer | File;
-    uri?: string;
-    data?: ArrayBuffer;
-    base64?: string | null;
+    mimetype?: string;
+    base64?: string;
     name: string;
 }
 export type Diff<T extends keyof any, U extends keyof any> = {

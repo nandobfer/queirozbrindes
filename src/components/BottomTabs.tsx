@@ -1,68 +1,33 @@
-import { createMaterialBottomTabNavigator } from "@react-navigation/material-bottom-tabs"
 import React from "react"
-import { Icon } from "react-native-paper"
-import { colors } from "../style/colors"
-import { paper_theme } from "../style/theme"
-import { Panel } from "../Screens/MainScreen/Panel/PanelStack"
-import { Favorites } from "../Screens/MainScreen/Favorites/Favorites"
-import { Setup } from "../Screens/MainScreen/Setup/Setup"
-import { useUser } from "../hooks/useUser"
-import { CreatorStack } from "../Screens/Creator/CreatorStack"
-import { SearchStack } from "../Screens/MainScreen/Search/SearchStack"
-import { useVideoPlayer } from "../hooks/useVideoplayer"
-
+import { OrderList } from "../Screens/Home/OrderList/OrderList"
+import { useQuery } from "@tanstack/react-query"
+import { Order } from "../types/server/class/Order"
+import { api } from "../backend/api"
+import { BottomNavigation, Text } from "react-native-paper"
 
 interface BottomTabsProps {}
 
-const Tab = createMaterialBottomTabNavigator()
-
-const getIcon = (name: string, focused: boolean) => <Icon color={focused ? colors.secondary : colors.primary} size={24} source={name} />
-
 export const BottomTabs: React.FC<BottomTabsProps> = ({}) => {
-    const { user } = useUser()
-    const { showAppBar } = useVideoPlayer()
+    const [tabIndex, setTabIndex] = React.useState(0)
+    const [routes] = React.useState([
+        { key: "budgets", title: "Orçamentos", focusedIcon: "clipboard-list", unfocusedIcon: "clipboard-list-outline" },
+        { key: "orders", title: "Pedidos", focusedIcon: "archive-check", unfocusedIcon: "archive-check-outline" },
+    ])
 
-    return user ? (
-        <Tab.Navigator
-            theme={paper_theme}
-            initialRouteName={"panel"}
-            activeColor={colors.primary}
-            inactiveColor={colors.primary}
-            activeIndicatorStyle={{ backgroundColor: colors.primary }}
-            sceneAnimationEnabled={true}
-            sceneAnimationType="shifting"
-            barStyle={{ display: showAppBar ? "flex" : "none" }}
-        >
-            <Tab.Screen
-                name="panel"
-                component={Panel}
-                options={{
-                    tabBarLabel: "Painel",
-                    tabBarIcon: (tab) => getIcon("apps", tab.focused),
-                }}
-            />
-            {user.creator?.active && (
-                <Tab.Screen
-                    name="creator"
-                    component={CreatorStack}
-                    options={{ tabBarLabel: "Criador", tabBarIcon: (tab) => getIcon("account", tab.focused) }}
-                />
-            )}
-            <Tab.Screen
-                name="search"
-                component={SearchStack}
-                options={{ tabBarLabel: "Buscar", tabBarIcon: (tab) => getIcon("magnify", tab.focused) }}
-            />
-            <Tab.Screen
-                name="favorites"
-                component={Favorites}
-                options={{ tabBarLabel: "Favoritos", tabBarIcon: (tab) => getIcon("heart-outline", tab.focused) }}
-            />
-            <Tab.Screen
-                name="setup"
-                component={Setup}
-                options={{ tabBarLabel: "Config", tabBarIcon: (tab) => getIcon("cog-outline", tab.focused) }}
-            />
-        </Tab.Navigator>
-    ) : null
+    const { data, isFetching } = useQuery<Order[]>({
+        initialData: [],
+        queryKey: ["ordersData", tabIndex],
+        queryFn: async () => (await api.get("/order")).data,
+        refetchOnWindowFocus: true,
+    })
+
+    const Orders = () => <OrderList orders={data.filter((item) => item.type === "order")} />
+    const Budgets = () => <OrderList orders={data.filter((item) => item.type === "budget")} />
+
+    const renderScene = BottomNavigation.SceneMap({
+        budgets: Budgets,
+        orders: Orders,
+    })
+
+    return <BottomNavigation navigationState={{ index: tabIndex, routes }} onIndexChange={setTabIndex} renderScene={renderScene} />
 }

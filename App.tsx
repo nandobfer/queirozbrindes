@@ -25,7 +25,7 @@ export default function App() {
 
     const onLayoutRootView = useCallback(async () => {
         if (fontsLoaded || fontError) {
-            // await SplashScreen.hideAsync()
+            await SplashScreen.hideAsync()
         }
     }, [fontsLoaded, fontError])
 
@@ -36,7 +36,7 @@ export default function App() {
     return (
         <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
             <Providers>
-                <StatusBar animated translucent />
+                <StatusBar animated translucent style="dark" />
                 <Routes />
                 {/* <NotificationsHandler /> */}
             </Providers>
