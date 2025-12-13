@@ -25,6 +25,7 @@
         "burgos-array": "^1.0.2",
         "burgos-documents": "^1.0.2",
         "burgos-estadosbrasil": "^1.0.1",
+        "burgos-fillpdf": "^1.0.2",
         "expo": "^51.0.8",
         "expo-av": "~14.0.5",
         "expo-build-properties": "^0.12.5",

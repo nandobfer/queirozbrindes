@@ -30,23 +30,7 @@ const orderTypes: { value: OrderType; label: string }[] = [
 const initialCustomer: Customer = { id: "", name: "" }
 
 const validation = yup.object().shape({
-    number: yup
-        .number()
-        .required("O número do pedido é obrigatório")
-        .typeError("O número do pedido deve ser um número")
-        .test({
-            name: "valid",
-            message: "Número do pedido já está em uso",
-            test: async (value) => {
-                try {
-                    const response = await api.get<boolean>("/order/validate-number", { params: { number: value } })
-                    return response.data
-                } catch (error) {
-                    console.log(error)
-                    return true
-                }
-            },
-        }),
+    number: yup.number().required("O número do pedido é obrigatório").typeError("O número do pedido deve ser um número"),
     type: yup.mixed<OrderType>().oneOf(["budget", "order"]).required("O tipo é obrigatório"),
     customer: yup.object().shape({
         name: yup.string().required("O nome fantasia é obrigatório"),
@@ -65,9 +49,10 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
         isFetching: isFetchingNextAvailableNumber,
         refetch: refetchNumber,
     } = useQuery<number>({
-        initialData: 0,
-        queryKey: ["nextNumber"],
+        initialData: initialOrder ? Number(initialOrder.number) : 0,
+        queryKey: ["nextNumber", initialOrder],
         queryFn: async () => (await api.get("/order/next-available-number")).data,
+        enabled: !initialOrder,
     })
 
     const formik = useFormik<OrderForm>({
@@ -82,10 +67,20 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
             if (posting) return
             setPosting(true)
             try {
+                if (values.number !== initialOrder?.number) {
+                    const response = await api.get<boolean>("/order/validate-number", { params: { number: values.number } })
+                    if (!response.data) {
+                        formikHelpers.setFieldError("number", "Número do pedido já está em uso")
+                        setPosting(false)
+                        return
+                    }
+                }
+
                 const response = initialOrder
                     ? await api.put<Order>(`/order`, values, { params: { order_id: initialOrder.id } })
                     : await api.post<Order>("/order", values)
                 navigation.navigate("Home")
+                setTimeout(() => navigation.navigate("Order", { order: response.data }), 500)
             } catch (error) {
                 console.log(error)
             } finally {
@@ -118,8 +113,8 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
 
     useFocusEffect(
         useCallback(() => {
-            refetchNumber()
-        }, [])
+            if (!initialOrder) refetchNumber()
+        }, [initialOrder])
     )
 
     useEffect(() => {
@@ -128,12 +123,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
 
     return (
         <ScrollView style={[{ flex: 1 }]} contentContainerStyle={[{ padding: 20, gap: 10 }]} keyboardShouldPersistTaps="handled">
-            <View style={[{ flexDirection: "row", alignItems: "center", gap: 5 }]}>
-                <Text variant="titleLarge" style={[{ flex: 1 }]}>
-                    Orçamento
-                </Text>
-                <FormText label="Número" formik={formik} name="number" keyboardType="numeric" flex={1} left={<TextInput.Icon icon={"pound"} />} />
-            </View>
+            <FormText label="Número" formik={formik} name="number" keyboardType="numeric" flex={1} left={<TextInput.Icon icon={"pound"} />} />
             <View style={[{ flexDirection: "row", gap: 10 }]}>
                 <SelectComponent label="Tipo" flex={1} data={orderTypes} formik={formik} name="type" />
                 <Pressable onPress={() => setSelectDate("order_date")} style={{ flex: 1 }}>

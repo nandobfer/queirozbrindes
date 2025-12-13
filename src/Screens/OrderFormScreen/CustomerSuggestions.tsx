@@ -39,7 +39,7 @@ export const CustomerSuggestions: React.FC<CustomerSuggestionsProps> = (props) =
                     borderRightWidth: 10,
                     borderLeftWidth: 10,
                 }}
-            ></View>
+            />
             {!props.loading && props.customers.length === 0 && (
                 <Text style={[{ paddingHorizontal: 10, paddingVertical: 5 }]}>Digite para buscar</Text>
             )}

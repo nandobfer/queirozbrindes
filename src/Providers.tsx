@@ -17,17 +17,19 @@ interface ProvidersProps {
 export const Providers: React.FC<ProvidersProps> = ({ children }) => {
     return (
         <GestureHandlerRootView>
-            <NavigationContainer theme={{ ...NavigationTheme, colors: { ...NavigationTheme.colors, background: DefaultTheme.colors.background } }}>
-                <QueryClientProvider client={new QueryClient()}>
-                    <PaperProvider theme={{ dark: false }}>
+            <PaperProvider theme={{ dark: false }}>
+                <NavigationContainer
+                    theme={{ ...NavigationTheme, colors: { ...NavigationTheme.colors, background: DefaultTheme.colors.background } }}
+                >
+                    <QueryClientProvider client={new QueryClient()}>
                         <SnackbarProvider>
                             {children}
                             <Snackbar />
                             <Text style={{ position: "absolute", bottom: 5, right: 5, color: "red" }}>{constants.expoConfig?.version}</Text>
                         </SnackbarProvider>
-                    </PaperProvider>
-                </QueryClientProvider>
-            </NavigationContainer>
+                    </QueryClientProvider>
+                </NavigationContainer>
+            </PaperProvider>
         </GestureHandlerRootView>
     )
 }
