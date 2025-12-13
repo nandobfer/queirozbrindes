@@ -26,8 +26,7 @@ export const OrderCard: React.FC<OrderCardProps> = (props) => {
             await deleteOrder()
             props.onDelete()
         } else {
-            // Handle edit action
-            console.log("Edit order:", props.order.id)
+            navigation.navigate("OrderForm", { order: props.order })
         }
         swipeableRef.current?.close()
     }

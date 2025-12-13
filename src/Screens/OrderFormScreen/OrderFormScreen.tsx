@@ -2,17 +2,18 @@ import React, { useState } from "react"
 import { Pressable, ScrollView, View } from "react-native"
 import { SelectComponent } from "../../components/SelectComponent"
 import { useFormik } from "formik"
-import { DeliveryDate, Order, OrderForm, OrderType } from "../../types/server/class/Order"
+import { Order, OrderForm, OrderType } from "../../types/server/class/Order"
 import { useQuery } from "@tanstack/react-query"
 import { api } from "../../backend/api"
 import { FormText } from "../../components/FormText"
 import { Button, Text, TextInput } from "react-native-paper"
 import DatePicker from "react-native-date-picker"
 import { estados } from "../../tools/estadosBrasil"
-import { StackNavigation } from "../../Routes"
+import { StackNavigation, StackRoute } from "../../Routes"
 
 interface OrderFormScreenProps {
     navigation: StackNavigation
+    route: StackRoute
 }
 
 const orderTypes: { value: OrderType; label: string }[] = [
@@ -20,10 +21,11 @@ const orderTypes: { value: OrderType; label: string }[] = [
     { label: "Pedido", value: "order" },
 ]
 
-export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation }) => {
+export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, route }) => {
     const [selectDate, setSelectDate] = useState<"order_date" | "delivery_date_from" | "delivery_date_to" | null>(null)
-    const [deliveryDate, setDeliveryDate] = useState<DeliveryDate>({ from: 0, to: 0 })
     const [posting, setPosting] = useState(false)
+
+    const initialOrder = route.params?.order
 
     const { data: nextAvailableNumber, isFetching } = useQuery<number>({
         initialData: 0,
@@ -33,7 +35,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation }) 
     })
 
     const formik = useFormik<OrderForm>({
-        initialValues: {
+        initialValues: initialOrder || {
             type: "budget",
             number: nextAvailableNumber.toString(),
             items: [],
@@ -44,8 +46,10 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation }) 
             if (posting) return
             setPosting(true)
             try {
-                const response = await api.post<Order>("/order", values)
-                navigation.navigate("Products", { order: response.data })
+                const response = initialOrder
+                    ? await api.put<Order>(`/order`, values, { params: { order_id: initialOrder.id } })
+                    : await api.post<Order>("/order", values)
+                navigation.navigate("Home")
             } catch (error) {
                 console.log(error)
             } finally {
@@ -56,7 +60,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation }) 
 
     return (
         <ScrollView style={[{ flex: 1 }]} contentContainerStyle={[{ padding: 20, gap: 10 }]} keyboardShouldPersistTaps="handled">
-            <Text variant="titleLarge">Orçamento #{nextAvailableNumber}</Text>
+            <Text variant="titleLarge">Orçamento #{formik.values.number}</Text>
             <View style={[{ flexDirection: "row", gap: 10 }]}>
                 <SelectComponent label="Tipo" flex={1} data={orderTypes} formik={formik} name="type" />
                 <Pressable onPress={() => setSelectDate("order_date")} style={{ flex: 1 }}>
@@ -80,7 +84,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation }) 
                 <FormText label={"Inscrição estadual"} name="customer.state_registration" formik={formik} flex={1} keyboardType="numeric" />
             </View>
 
-            <FormText label="Endereço" formik={formik} name="customer.address" />
+            <FormText label="Endereço" formik={formik} name="customer.street" />
             <FormText label="Bairro" formik={formik} name="customer.neighborhood" />
 
             <View style={[{ flexDirection: "row", gap: 10 }]}>
@@ -132,7 +136,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation }) 
                 disabled={isFetching || posting}
                 style={{ marginTop: 20 }}
             >
-                Continuar
+                Salvar
             </Button>
 
             <DatePicker
@@ -142,8 +146,8 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation }) 
                     selectDate === "order_date"
                         ? new Date(formik.values.order_date)
                         : selectDate === "delivery_date_from"
-                        ? new Date(deliveryDate.from || Date.now())
-                        : new Date(deliveryDate.to || Date.now())
+                        ? new Date(formik.values.delivery_date?.from || Date.now())
+                        : new Date(formik.values.delivery_date?.to || Date.now())
                 }
                 onConfirm={(date) => {
                     formik.setFieldValue(
