@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useCallback, useState } from "react"
 import { Pressable, ScrollView, View } from "react-native"
 import { SelectComponent } from "../../components/SelectComponent"
 import { useFormik } from "formik"
@@ -10,6 +10,8 @@ import { Button, Text, TextInput } from "react-native-paper"
 import DatePicker from "react-native-date-picker"
 import { estados } from "../../tools/estadosBrasil"
 import { StackNavigation, StackRoute } from "../../Routes"
+import { Customer } from "../../types/server/class/Customer"
+import { debounce } from "lodash"
 
 interface OrderFormScreenProps {
     navigation: StackNavigation
@@ -31,7 +33,6 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
         initialData: 0,
         queryKey: ["nextNumber"],
         queryFn: async () => (await api.get("/order/next-available-number")).data,
-        refetchOnWindowFocus: true,
     })
 
     const formik = useFormik<OrderForm>({
@@ -56,6 +57,24 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
                 setPosting(false)
             }
         },
+    })
+
+    const queryFunction = useCallback(async () => {
+        const response = await api.get<Customer[]>("/order/query-customer", { params: { query: formik.values.customer.name } })
+        console.log("Customer query response:", response.data)
+        return response.data
+    }, [formik.values.customer.name])
+
+    const debouncedQueryFunction = debounce(queryFunction, 300)
+
+    const { data: customers } = useQuery<Customer[]>({
+        initialData: [],
+        queryKey: ["customers", formik.values.customer.name],
+        queryFn: async () => {
+            const result = await debouncedQueryFunction()
+            return result || [] // Handle undefined case
+        },
+        enabled: !formik.values.customer.id,
     })
 
     return (
