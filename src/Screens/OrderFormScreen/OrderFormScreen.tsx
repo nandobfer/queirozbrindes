@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Pressable, ScrollView, View } from "react-native"
 import { SelectComponent } from "../../components/SelectComponent"
 import { useFormik } from "formik"
@@ -11,7 +11,11 @@ import DatePicker from "react-native-date-picker"
 import { estados } from "../../tools/estadosBrasil"
 import { StackNavigation, StackRoute } from "../../Routes"
 import { Customer } from "../../types/server/class/Customer"
-import { debounce } from "lodash"
+import { useDebounce } from "use-debounce"
+import { CustomerSuggestions } from "./CustomerSuggestions"
+import { TextInput as NativeInput } from "react-native"
+import * as yup from "yup"
+import { useFocusEffect } from "@react-navigation/native"
 
 interface OrderFormScreenProps {
     navigation: StackNavigation
@@ -23,13 +27,44 @@ const orderTypes: { value: OrderType; label: string }[] = [
     { label: "Pedido", value: "order" },
 ]
 
+const initialCustomer: Customer = { id: "", name: "" }
+
+const validation = yup.object().shape({
+    number: yup
+        .number()
+        .required("O número do pedido é obrigatório")
+        .typeError("O número do pedido deve ser um número")
+        .test({
+            name: "valid",
+            message: "Número do pedido já está em uso",
+            test: async (value) => {
+                try {
+                    const response = await api.get<boolean>("/order/validate-number", { params: { number: value } })
+                    return response.data
+                } catch (error) {
+                    console.log(error)
+                    return true
+                }
+            },
+        }),
+    type: yup.mixed<OrderType>().oneOf(["budget", "order"]).required("O tipo é obrigatório"),
+    customer: yup.object().shape({
+        name: yup.string().required("O nome fantasia é obrigatório"),
+    }),
+})
+
 export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, route }) => {
+    const customerNameRef = useRef<NativeInput>(null)
     const [selectDate, setSelectDate] = useState<"order_date" | "delivery_date_from" | "delivery_date_to" | null>(null)
     const [posting, setPosting] = useState(false)
 
     const initialOrder = route.params?.order
 
-    const { data: nextAvailableNumber, isFetching } = useQuery<number>({
+    const {
+        data: nextAvailableNumber,
+        isFetching: isFetchingNextAvailableNumber,
+        refetch: refetchNumber,
+    } = useQuery<number>({
         initialData: 0,
         queryKey: ["nextNumber"],
         queryFn: async () => (await api.get("/order/next-available-number")).data,
@@ -40,7 +75,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
             type: "budget",
             number: nextAvailableNumber.toString(),
             items: [],
-            customer: { id: "", name: "" },
+            customer: initialCustomer,
             order_date: Date.now(),
         },
         async onSubmit(values, formikHelpers) {
@@ -57,29 +92,48 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
                 setPosting(false)
             }
         },
+        validationSchema: validation,
     })
 
-    const queryFunction = useCallback(async () => {
-        const response = await api.get<Customer[]>("/order/query-customer", { params: { query: formik.values.customer.name } })
-        console.log("Customer query response:", response.data)
-        return response.data
-    }, [formik.values.customer.name])
+    const [debouncedCustomerName] = useDebounce(formik.values.customer.name, 300)
 
-    const debouncedQueryFunction = debounce(queryFunction, 300)
-
-    const { data: customers } = useQuery<Customer[]>({
+    const { data: customers, isFetching: isFetchingCustomers } = useQuery<Customer[]>({
         initialData: [],
-        queryKey: ["customers", formik.values.customer.name],
+        queryKey: ["customers", debouncedCustomerName],
         queryFn: async () => {
-            const result = await debouncedQueryFunction()
-            return result || [] // Handle undefined case
+            if (!debouncedCustomerName.trim()) return []
+
+            const response = await api.get<Customer[]>("/order/query-customer", {
+                params: { query: debouncedCustomerName },
+            })
+            return response.data
         },
-        enabled: !formik.values.customer.id,
+        enabled: !formik.values.customer.id && debouncedCustomerName.trim().length > 0,
     })
+
+    const onSelectCustomerSuggestion = (customer: Customer) => {
+        formik.setFieldValue("customer", customer)
+        customerNameRef.current?.blur()
+    }
+
+    useFocusEffect(
+        useCallback(() => {
+            refetchNumber()
+        }, [])
+    )
+
+    useEffect(() => {
+        formik.setFieldValue("number", nextAvailableNumber.toString())
+    }, [nextAvailableNumber])
 
     return (
         <ScrollView style={[{ flex: 1 }]} contentContainerStyle={[{ padding: 20, gap: 10 }]} keyboardShouldPersistTaps="handled">
-            <Text variant="titleLarge">Orçamento #{formik.values.number}</Text>
+            <View style={[{ flexDirection: "row", alignItems: "center", gap: 5 }]}>
+                <Text variant="titleLarge" style={[{ flex: 1 }]}>
+                    Orçamento
+                </Text>
+                <FormText label="Número" formik={formik} name="number" keyboardType="numeric" flex={1} left={<TextInput.Icon icon={"pound"} />} />
+            </View>
             <View style={[{ flexDirection: "row", gap: 10 }]}>
                 <SelectComponent label="Tipo" flex={1} data={orderTypes} formik={formik} name="type" />
                 <Pressable onPress={() => setSelectDate("order_date")} style={{ flex: 1 }}>
@@ -95,7 +149,23 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
                 </Pressable>
             </View>
 
-            <FormText label="Nome fantasia" formik={formik} name="customer.name" />
+            <View style={{ position: "relative" }}>
+                <FormText
+                    ref={customerNameRef}
+                    label="Nome fantasia"
+                    formik={formik}
+                    name="customer.name"
+                    onSubmitEditing={() => customerNameRef.current?.blur()}
+                    right={
+                        formik.values.customer.id ? (
+                            <TextInput.Icon onPress={() => formik.setFieldValue("customer", initialCustomer)} icon={"close"} />
+                        ) : undefined
+                    }
+                />
+                {customerNameRef.current?.isFocused() && !formik.values.customer.id && (
+                    <CustomerSuggestions customers={customers} loading={isFetchingCustomers} onSelect={onSelectCustomerSuggestion} />
+                )}
+            </View>
             <FormText label="Razão social" formik={formik} name="customer.company_name" />
 
             <View style={[{ flexDirection: "row", gap: 10 }]}>
@@ -152,7 +222,7 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
                 mode="contained"
                 onPress={() => formik.handleSubmit()}
                 loading={posting}
-                disabled={isFetching || posting}
+                disabled={isFetchingNextAvailableNumber || posting}
                 style={{ marginTop: 20 }}
             >
                 Salvar

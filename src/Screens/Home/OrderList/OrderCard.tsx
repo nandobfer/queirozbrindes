@@ -1,7 +1,7 @@
 import React, { useRef } from "react"
 import { View } from "react-native"
 import { Order } from "../../../types/server/class/Order"
-import { Button, Surface, Text } from "react-native-paper"
+import { Button, Icon, Surface, Text } from "react-native-paper"
 import { currencyMask } from "../../../tools/currencyMask"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigation } from "../../../Routes"
@@ -9,6 +9,7 @@ import { Swipeable } from "react-native-gesture-handler"
 import { SwipedContainer } from "../../../components/SwipedContainer"
 import { colors } from "../../../style/colors"
 import { useOrder } from "../../../hooks/useOrder"
+import { IconedText } from "../../../components/IconedText"
 
 interface OrderCardProps {
     order: Order
@@ -46,16 +47,26 @@ export const OrderCard: React.FC<OrderCardProps> = (props) => {
         >
             <Surface style={[{ padding: 20, borderRadius: 8, gap: 10 }]}>
                 <View style={[{ flexDirection: "row", justifyContent: "space-between" }]}>
-                    <Text variant="titleLarge"># {props.order.number}</Text>
-                    <Text variant="titleSmall">{new Date(props.order.order_date).toLocaleDateString("pt-br")}</Text>
+                    <IconedText variant="titleLarge" icon={"pound"}>
+                        {props.order.number}
+                    </IconedText>
+
+                    <IconedText variant="titleSmall" icon="calendar">
+                        {new Date(props.order.order_date).toLocaleDateString("pt-br")}
+                    </IconedText>
                 </View>
 
-                <Text variant="titleMedium">{props.order.customer.name}</Text>
-                <Text variant="titleMedium">{props.order.customer.cnpj}</Text>
+                <IconedText variant="titleMedium" icon={"card-account-details"}>
+                    {props.order.customer.name}
+                </IconedText>
+
+                <IconedText variant="titleMedium" icon={"domain"}>
+                    {props.order.customer.cnpj}
+                </IconedText>
 
                 <View style={[{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }]}>
                     <Button mode="contained" onPress={() => navigation.navigate("Products", { order: props.order })}>
-                        Produtos
+                        Ver detalhes
                     </Button>
                     <Text variant="titleLarge">Total: {currencyMask(totalValue)}</Text>
                 </View>

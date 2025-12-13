@@ -10,6 +10,7 @@ import { currencyMask } from "../../tools/currencyMask"
 import { api } from "../../backend/api"
 import { Order } from "../../types/server/class/Order"
 import { uid } from "uid"
+import { handleCurrencyInput } from "../../tools/handleCurrencyInput"
 
 interface ProductFormScreenProps {
     navigation: StackNavigation
@@ -54,7 +55,15 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
 
             <View style={[{ flexDirection: "row", gap: 10 }]}>
                 <FormText label={"Quantidade"} name="quantity" formik={formik} flex={1} keyboardType="numeric" />
-                <FormText label={"Preço unitário"} name="unit_price" formik={formik} flex={1} keyboardType="numeric" />
+                <FormText
+                    label={"Preço unitário"}
+                    name="unit_price"
+                    formik={formik}
+                    flex={1}
+                    keyboardType="numeric"
+                    value={currencyMask(formik.values.unit_price)}
+                    onChangeText={(text) => formik.setFieldValue("unit_price", handleCurrencyInput(text))}
+                />
             </View>
 
             <Text style={[{ alignSelf: "flex-end" }]}>Subtotal: {currencyMask(formik.values.quantity * formik.values.unit_price)}</Text>

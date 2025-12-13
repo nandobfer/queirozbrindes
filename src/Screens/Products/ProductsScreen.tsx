@@ -8,7 +8,6 @@ import { ProductItem } from "./ProductItem"
 import { FAB, Text } from "react-native-paper"
 import { useFocusEffect } from "@react-navigation/native"
 
-
 interface ProductsScreenProps {
     navigation: StackNavigation
     route: StackRoute

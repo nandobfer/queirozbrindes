@@ -19,7 +19,7 @@ export const Providers: React.FC<ProvidersProps> = ({ children }) => {
         <GestureHandlerRootView>
             <NavigationContainer theme={{ ...NavigationTheme, colors: { ...NavigationTheme.colors, background: DefaultTheme.colors.background } }}>
                 <QueryClientProvider client={new QueryClient()}>
-                    <PaperProvider>
+                    <PaperProvider theme={{ dark: false }}>
                         <SnackbarProvider>
                             {children}
                             <Snackbar />
