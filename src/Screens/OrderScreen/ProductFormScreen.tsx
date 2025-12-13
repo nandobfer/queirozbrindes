@@ -44,7 +44,7 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
     })
 
     useEffect(() => {
-        props.navigation.setOptions({ title: `Pedido #${props.route.params?.order?.number}` })
+        props.navigation.setOptions({ title: `${props.route.params?.order?.type === "budget" ? "Orçamento" : "Pedido"} #${props.route.params?.order?.number}` })
     }, [props.navigation])
 
     return (

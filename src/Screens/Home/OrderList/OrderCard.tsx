@@ -65,10 +65,10 @@ export const OrderCard: React.FC<OrderCardProps> = (props) => {
                 </IconedText>
 
                 <View style={[{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }]}>
-                    <Button mode="contained" onPress={() => navigation.navigate("Products", { order: props.order })}>
+                    <Text variant="titleLarge">Total: {currencyMask(totalValue)}</Text>
+                    <Button mode="contained" onPress={() => navigation.navigate("Order", { order: props.order })}>
                         Ver detalhes
                     </Button>
-                    <Text variant="titleLarge">Total: {currencyMask(totalValue)}</Text>
                 </View>
             </Surface>
         </Swipeable>
