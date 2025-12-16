@@ -5,12 +5,13 @@ import { useQuery } from "@tanstack/react-query"
 import { api } from "../../backend/api"
 import { Order } from "../../types/server/class/Order"
 import { ProductItem } from "./ProductItem"
-import { Divider, FAB, IconButton, Menu, Text } from "react-native-paper"
+import { Button, Divider, FAB, IconButton, Menu, Text } from "react-native-paper"
 import { useFocusEffect } from "@react-navigation/native"
 import { IconedText } from "../../components/IconedText"
 import { estados } from "../../tools/estadosBrasil"
 import { currencyMask } from "../../tools/currencyMask"
 import { OrderMenu } from "./OrderMenu"
+import { NewProductButton } from "./NewProductButton"
 
 interface OrderScreenProps {
     navigation: StackNavigation
@@ -45,94 +46,76 @@ export const OrderScreen: React.FC<OrderScreenProps> = (props) => {
     }, [props.navigation, order])
 
     return (
-        <>
-            <FlatList
-                scrollEnabled={true}
-                data={order.items}
-                renderItem={({ item }) => <ProductItem product={item} onDelete={refetch} order={order} />}
-                ListEmptyComponent={
-                    <View>
-                        <Text>Nenhum produto para mostrar</Text>
+        <FlatList
+            scrollEnabled={true}
+            data={order.items}
+            renderItem={({ item }) => <ProductItem product={item} onDelete={refetch} order={order} />}
+            contentContainerStyle={{ gap: 20, padding: 20 }}
+            refreshing={isFetching}
+            onRefresh={refetch}
+            keyExtractor={(item) => item.id}
+            ListHeaderComponent={
+                <View style={[{ gap: 10, flex: 1 }]}>
+                    <View style={[{ flexDirection: "row", justifyContent: "space-between" }]}>
+                        <IconedText variant="titleLarge" icon={"card-account-details"}>
+                            {order.customer.name}
+                        </IconedText>
+
+                        <IconedText variant="titleSmall" icon="calendar">
+                            {new Date(order.order_date).toLocaleDateString("pt-br")}
+                        </IconedText>
                     </View>
-                }
-                contentContainerStyle={{ gap: 20, padding: 20 }}
-                refreshing={isFetching}
-                onRefresh={refetch}
-                keyExtractor={(item) => item.id}
-                ListHeaderComponent={
-                    <View style={[{ gap: 10, flex: 1 }]}>
-                        <View style={[{ flexDirection: "row", justifyContent: "space-between" }]}>
-                            <IconedText variant="titleLarge" icon={"card-account-details"}>
-                                {order.customer.name}
-                            </IconedText>
 
-                            <IconedText variant="titleSmall" icon="calendar">
-                                {new Date(order.order_date).toLocaleDateString("pt-br")}
-                            </IconedText>
-                        </View>
+                    <Text variant="titleMedium">{order.customer.company_name}</Text>
 
-                        <Text variant="titleMedium">{order.customer.company_name}</Text>
+                    <IconedText variant="titleMedium" icon={"domain"}>
+                        {order.customer.cnpj}
+                    </IconedText>
 
-                        <IconedText variant="titleMedium" icon={"domain"}>
-                            {order.customer.cnpj}
-                        </IconedText>
+                    <IconedText variant="titleMedium" icon={"phone"}>
+                        {order.customer.phone}
+                    </IconedText>
 
-                        <IconedText variant="titleMedium" icon={"phone"}>
-                            {order.customer.phone}
-                        </IconedText>
+                    <Text variant="titleMedium">Insc. Estadual: {order.customer.state_registration}</Text>
 
-                        <Text variant="titleMedium">Insc. Estadual: {order.customer.state_registration}</Text>
+                    <Divider />
 
-                        <Divider />
+                    <IconedText variant="titleSmall" icon="map-marker">
+                        {order.customer.street}
+                    </IconedText>
+                    <Text variant="titleSmall"> {[order.customer.neighborhood, order.customer.city, stateName?.label].join(", ")} </Text>
 
-                        <IconedText variant="titleSmall" icon="map-marker">
-                            {order.customer.street}
-                        </IconedText>
-                        <Text variant="titleSmall"> {[order.customer.neighborhood, order.customer.city, stateName?.label].join(", ")} </Text>
+                    <Divider />
 
-                        <Divider />
+                    <IconedText icon="cash" variant="titleLarge">
+                        {currencyMask(totalValue)}
+                    </IconedText>
+                    <Text variant="titleSmall">Condições de pagamento: {order.payment_terms}</Text>
 
-                        <IconedText icon="cash" variant="titleLarge">
-                            {currencyMask(totalValue)}
-                        </IconedText>
-                        <Text variant="titleSmall">Condições de pagamento: {order.payment_terms}</Text>
+                    <Divider />
 
-                        <Divider />
+                    <IconedText icon="truck-delivery" variant="titleLarge">
+                        Entrega{" "}
+                    </IconedText>
+                    {order.delivery_date?.from && (
+                        <Text variant="titleMedium">A partir de: {new Date(order.delivery_date.from).toLocaleDateString("pt-br")}</Text>
+                    )}
+                    {order.delivery_date?.to && (
+                        <Text variant="titleMedium">Até: {new Date(order.delivery_date.to).toLocaleDateString("pt-br")}</Text>
+                    )}
 
-                        <IconedText icon="truck-delivery" variant="titleLarge">
-                            Entrega{" "}
-                        </IconedText>
-                        {order.delivery_date?.from && (
-                            <Text variant="titleMedium">A partir de: {new Date(order.delivery_date.from).toLocaleDateString("pt-br")}</Text>
-                        )}
-                        {order.delivery_date?.to && (
-                            <Text variant="titleMedium">Até: {new Date(order.delivery_date.to).toLocaleDateString("pt-br")}</Text>
-                        )}
+                    <Divider />
 
-                        <Divider />
+                    <IconedText icon="receipt" variant="titleLarge">
+                        Produtos
+                    </IconedText>
+                    {order.items.length > 0 && (
+                        <Text variant="titleSmall">Arraste um produto para a esquerda para editar e para a direita para excluir</Text>
+                    )}
 
-                        <IconedText icon="receipt" variant="titleLarge">
-                            Produtos
-                        </IconedText>
-                        {order.items.length > 0 && (
-                            <Text variant="titleSmall">Arraste um produto para a esquerda para editar e para a direita para excluir</Text>
-                        )}
-                    </View>
-                }
-            />
-
-            <FAB
-                style={[
-                    {
-                        position: "absolute",
-                        right: 15,
-                        bottom: 15,
-                        borderRadius: 100,
-                    },
-                ]}
-                icon="plus"
-                onPress={() => props.navigation.navigate("ProductForm", { order: order })}
-            />
-        </>
+                    <NewProductButton order={order} onSubmit={refetch} />
+                </View>
+            }
+        />
     )
 }

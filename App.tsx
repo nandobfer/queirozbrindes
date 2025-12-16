@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar"
 import { Providers } from "./src/Providers"
 import { Routes } from "./src/Routes"
 import { useKeepAwake } from "expo-keep-awake"
-import { View } from "react-native"
+import { Platform, UIManager, View } from "react-native"
 import * as SplashScreen from "expo-splash-screen"
 import { useCallback } from "react"
 import { Lato_400Regular, Lato_700Bold, useFonts } from "@expo-google-fonts/lato"
@@ -10,9 +10,9 @@ import { Lato_400Regular, Lato_700Bold, useFonts } from "@expo-google-fonts/lato
 
 SplashScreen.preventAutoHideAsync()
 
-// if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
-//     UIManager.setLayoutAnimationEnabledExperimental(true)
-// }
+if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true)
+}
 
 
 export default function App() {

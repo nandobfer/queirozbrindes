@@ -1,20 +1,21 @@
-import React, { useEffect } from "react"
-import { ScrollView, View } from "react-native"
-import { StackNavigation, StackRoute } from "../../Routes"
-import { Button, Text } from "react-native-paper"
-import { useFormik, yupToFormErrors } from "formik"
-import { Item } from "../../types/server/class/Item"
-import { FormText } from "../../components/FormText"
+import React from "react"
+import { View } from "react-native"
 import * as Yup from "yup"
-import { currencyMask } from "../../tools/currencyMask"
-import { api } from "../../backend/api"
+import { Item } from "../../types/server/class/Item"
 import { Order } from "../../types/server/class/Order"
+import { useFormik } from "formik"
 import { uid } from "uid"
+import { api } from "../../backend/api"
+import { FormText } from "../../components/FormText"
+import { currencyMask } from "../../tools/currencyMask"
 import { handleCurrencyInput } from "../../tools/handleCurrencyInput"
+import { Button, Text } from "react-native-paper"
 
-interface ProductFormScreenProps {
-    navigation: StackNavigation
-    route: StackRoute
+interface ProductFormProps {
+    order: Order
+    product?: Item
+    onSubmit: () => void
+    onCancel: () => void
 }
 
 const validation = Yup.object().shape({
@@ -23,9 +24,9 @@ const validation = Yup.object().shape({
     unit_price: Yup.number().min(0, "O preço mínimo é 0").required("O preço unitário é obrigatório").typeError("O preço unitário deve ser um número"),
 })
 
-export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
-    const initialProduct = props.route.params?.product
-    const order_id = props.route.params?.order?.id as string
+export const ProductForm: React.FC<ProductFormProps> = (props) => {
+    const initialProduct = props.product
+    const order_id = props.order.id as string
     const formik = useFormik<Item>({
         initialValues: initialProduct || { description: "", quantity: 0, unit_price: 0, id: "" },
         async onSubmit(values, formikHelpers) {
@@ -38,7 +39,7 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
                     ? await api.put("/order/item", productToAdd, { params: { order_id, product_id: initialProduct.id } })
                     : await api.post<Order>("/order/item", productToAdd, { params: { order_id } })
                 console.log(response.data)
-                props.navigation.goBack()
+                props.onSubmit()
             } catch (error) {
                 console.log(error)
             }
@@ -46,16 +47,8 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
         validationSchema: validation,
     })
 
-    useEffect(() => {
-        props.navigation.setOptions({
-            title: `${props.route.params?.order?.type === "budget" ? "Orçamento" : "Pedido"} #${props.route.params?.order?.number}`,
-        })
-    }, [props.navigation])
-
     return (
-        <ScrollView style={[{ flex: 1 }]} contentContainerStyle={[{ padding: 20, gap: 10 }]} keyboardShouldPersistTaps="handled">
-            <Text variant="titleLarge">Adicionar produto</Text>
-
+        <View style={[{ flex: 1, gap: 10 }]}>
             <FormText label="Discriminação" formik={formik} name="description" />
 
             <View style={[{ flexDirection: "row", gap: 10 }]}>
@@ -68,13 +61,21 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
                     keyboardType="numeric"
                     value={currencyMask(formik.values.unit_price)}
                     onChangeText={(text) => formik.setFieldValue("unit_price", handleCurrencyInput(text))}
+                    onSubmitEditing={() => formik.handleSubmit()}
+                    returnKeyType="done"
                 />
             </View>
 
             <Text style={[{ alignSelf: "flex-end" }]}>Subtotal: {currencyMask(formik.values.quantity * formik.values.unit_price)}</Text>
-            <Button mode="contained" onPress={() => formik.handleSubmit()} loading={formik.isSubmitting} disabled={formik.isSubmitting}>
-                Salvar
-            </Button>
-        </ScrollView>
+
+            <View style={[{ flexDirection: "row", alignSelf: "flex-end", gap: 10 }]}>
+                <Button onPress={props.onCancel} disabled={formik.isSubmitting}>
+                    Cancelar
+                </Button>
+                <Button mode="contained" onPress={() => formik.handleSubmit()} loading={formik.isSubmitting} disabled={formik.isSubmitting}>
+                    Salvar
+                </Button>
+            </View>
+        </View>
     )
 }

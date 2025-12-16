@@ -10,6 +10,8 @@ import { Order } from "../../types/server/class/Order"
 import { useProduct } from "../../hooks/useProduct"
 import { useNavigation } from "@react-navigation/native"
 import { StackNavigation } from "../../Routes"
+import { ProductForm } from "./ProductForm"
+import { animate } from "../../tools/animate"
 
 interface ProductItemProps {
     product: Item
@@ -20,6 +22,7 @@ interface ProductItemProps {
 export const ProductItem: React.FC<ProductItemProps> = (props) => {
     const swipeableRef = useRef<Swipeable>(null)
     const navigation = useNavigation<StackNavigation>()
+    const [editing, setEditing] = useState(false)
 
     const { deleting, deleteProduct } = useProduct(props.product, props.order)
 
@@ -28,12 +31,29 @@ export const ProductItem: React.FC<ProductItemProps> = (props) => {
             await deleteProduct()
             props.onDelete()
         } else {
-            navigation.navigate("ProductForm", { product: props.product, order: props.order })
+            openForm()
         }
         swipeableRef.current?.close()
     }
 
-    return (
+    const openForm = () => {
+        animate()
+        setEditing(true)
+    }
+
+    const closeForm = () => {
+        animate()
+        setEditing(false)
+    }
+
+    const finishEditing = () => {
+        closeForm()
+        props.onDelete()
+    }
+
+    return editing ? (
+        <ProductForm product={props.product} order={props.order} onSubmit={finishEditing} onCancel={closeForm} />
+    ) : (
         <Swipeable
             ref={swipeableRef}
             renderLeftActions={() => <SwipedContainer label="Editar" color={colors.info} direction="left" />}
