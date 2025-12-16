@@ -208,6 +208,8 @@ export const OrderFormScreen: React.FC<OrderFormScreenProps> = ({ navigation, ro
                 </Pressable>
             </View>
 
+            <FormText label="Observações" formik={formik} name="observations" multiline numberOfLines={4} textAlignVertical="top" />
+
             <Button
                 mode="contained"
                 onPress={() => formik.handleSubmit()}

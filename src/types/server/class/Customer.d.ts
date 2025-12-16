@@ -11,6 +11,8 @@ export declare class Customer {
     city?: string;
     state?: string;
     phone?: string;
+    static list(): Promise<Customer[]>;
+    static query(value: string): Promise<Customer[]>;
     constructor(data: CustomerPrisma);
 }
 export {};

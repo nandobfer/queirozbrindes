@@ -14,10 +14,13 @@ export interface DeliveryDate {
     to: number;
 }
 export interface Attachment {
+    id: string;
     filename: string;
     url: string;
+    width: number;
+    height: number;
 }
-export type OrderForm = Omit<WithoutFunctions<Order>, "id">;
+export type OrderForm = Omit<WithoutFunctions<Order>, "id" | "images">;
 export declare class Order {
     id: string;
     number: string;
@@ -25,8 +28,7 @@ export declare class Order {
     order_date: number;
     observations?: string;
     payment_terms?: string;
-    images?: Attachment[];
-    drawings?: Attachment[];
+    images: Attachment[];
     delivery_date?: DeliveryDate;
     items: Item[];
     customerId?: string;
@@ -34,6 +36,8 @@ export declare class Order {
     static list(): Promise<Order[]>;
     static get(id: string): Promise<Order | null>;
     static getNextAvailableNumber(): Promise<number>;
+    static validateNumber(number: string): Promise<boolean>;
+    static query(value: string): Promise<Order[]>;
     static create(data: OrderForm): Promise<Order>;
     constructor(data: OrderPrisma);
     update(data: Partial<OrderForm>): Promise<this>;

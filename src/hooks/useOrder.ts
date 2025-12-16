@@ -1,9 +1,96 @@
-import { useState } from "react"
-import { Order } from "../types/server/class/Order"
+import { useEffect, useState } from "react"
+import { Attachment, Order } from "../types/server/class/Order"
 import { api } from "../backend/api"
+import { ImagePickerAsset, MediaTypeOptions } from "expo-image-picker"
+import { getFilename, pickMedia } from "../tools/pickMedia"
+import { uid } from "uid"
+import { animate } from "../tools/animate"
+import { estados } from "../tools/estadosBrasil"
+import { AxiosError } from "axios"
 
 export const useOrder = (order: Order) => {
     const [deleting, setDeleting] = useState(false)
+    const [viewingMediaMenu, setViewingMediaMenu] = useState(false)
+    const [gallery, setGallery] = useState(order.images)
+    const [uploadingImages, setUploadingImages] = useState(false)
+
+    const stateName = estados.find((item) => item.value === order.customer.state)
+    const totalValue = order.items.reduce((acc, item) => acc + item.quantity * item.unit_price, 0)
+
+    const uploadImages = async (images: ImagePickerAsset[], attachments: Attachment[]) => {
+        if (uploadingImages) return
+        setUploadingImages(true)
+        try {
+            const formData = new FormData()
+            images.forEach((image, index) => {
+                formData.append(`file${index}`, { uri: image.uri, type: image.mimeType, name: attachments[index].filename } as any)
+            })
+
+            formData.append("data", JSON.stringify(attachments))
+            const response = await api.post("/order/image", formData, {
+                params: { order_id: order.id },
+                headers: { "Content-Type": "multipart/form-data" },
+            })
+            console.log(response.data)
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                console.log(JSON.stringify(error, null, 4))
+            }
+
+            console.log(error)
+        } finally {
+            setUploadingImages(false)
+        }
+    }
+
+    const deleteImage = async (attachment: Attachment) => {
+        animate()
+        setGallery((prev) => prev.filter((item) => item.id !== attachment.id))
+        try {
+            await api.delete("/order/image", { params: { order_id: order.id, attachment_id: attachment.id } })
+        } catch (error) {
+            console.log("Error deleting image:", error)
+        }
+    }
+
+    const handleCameraPress = () => {
+        setViewingMediaMenu(false)
+    }
+
+    const handleGalleryPress = async () => {
+        setViewingMediaMenu(false)
+        try {
+            const result = await pickMedia(undefined, true, MediaTypeOptions.Images)
+            if (result) {
+                const attachments: Attachment[] = []
+                result.forEach(async (media, index) => {
+                    const filename = getFilename(media)
+                    attachments.push({
+                        filename,
+                        url: media.uri,
+                        height: media.height,
+                        width: media.width,
+                        id: uid(),
+                    })
+                })
+                console.log(attachments)
+                animate()
+                setGallery([...gallery, ...attachments])
+
+                // send to backend
+                await uploadImages(result, attachments)
+            }
+        } catch (error) {
+            if (error instanceof AxiosError) {
+                console.log(JSON.stringify(error, null, 4))
+            }
+            console.log(error)
+        }
+    }
+
+    const handleDrawPress = () => {
+        setViewingMediaMenu(false)
+    }
 
     const deleteOrder = async () => {
         setDeleting(true)
@@ -16,5 +103,24 @@ export const useOrder = (order: Order) => {
         }
     }
 
-    return { deleting, deleteOrder }
+    useEffect(() => {
+        setGallery(order.images)
+    }, [order.images])
+
+    return {
+        deleting,
+        deleteOrder,
+        viewingMediaMenu,
+        setViewingMediaMenu,
+        gallery,
+        setGallery,
+        uploadingImages,
+        uploadImages,
+        handleCameraPress,
+        handleGalleryPress,
+        handleDrawPress,
+        stateName,
+        totalValue,
+        deleteImage,
+    }
 }
