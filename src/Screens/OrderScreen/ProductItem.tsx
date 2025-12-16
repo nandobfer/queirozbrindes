@@ -8,6 +8,8 @@ import { colors } from "../../style/colors"
 import { SwipedContainer } from "../../components/SwipedContainer"
 import { Order } from "../../types/server/class/Order"
 import { useProduct } from "../../hooks/useProduct"
+import { useNavigation } from "@react-navigation/native"
+import { StackNavigation } from "../../Routes"
 
 interface ProductItemProps {
     product: Item
@@ -17,6 +19,7 @@ interface ProductItemProps {
 
 export const ProductItem: React.FC<ProductItemProps> = (props) => {
     const swipeableRef = useRef<Swipeable>(null)
+    const navigation = useNavigation<StackNavigation>()
 
     const { deleting, deleteProduct } = useProduct(props.product, props.order)
 
@@ -25,8 +28,7 @@ export const ProductItem: React.FC<ProductItemProps> = (props) => {
             await deleteProduct()
             props.onDelete()
         } else {
-            // Handle edit action
-            console.log("Edit product:", props.product.id)
+            navigation.navigate("ProductForm", { product: props.product, order: props.order })
         }
         swipeableRef.current?.close()
     }

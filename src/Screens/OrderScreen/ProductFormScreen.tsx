@@ -24,16 +24,19 @@ const validation = Yup.object().shape({
 })
 
 export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
+    const initialProduct = props.route.params?.product
     const order_id = props.route.params?.order?.id as string
     const formik = useFormik<Item>({
-        initialValues: { description: "", quantity: 0, unit_price: 0, id: "" },
+        initialValues: initialProduct || { description: "", quantity: 0, unit_price: 0, id: "" },
         async onSubmit(values, formikHelpers) {
             const productToAdd: Item = {
                 ...values,
-                id: uid(),
+                id: initialProduct?.id || uid(),
             }
             try {
-                const response = await api.post<Order>("/order/item", productToAdd, { params: { order_id } })
+                const response = initialProduct
+                    ? await api.put("/order/item", productToAdd, { params: { order_id, product_id: initialProduct.id } })
+                    : await api.post<Order>("/order/item", productToAdd, { params: { order_id } })
                 console.log(response.data)
                 props.navigation.goBack()
             } catch (error) {
@@ -44,7 +47,9 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
     })
 
     useEffect(() => {
-        props.navigation.setOptions({ title: `${props.route.params?.order?.type === "budget" ? "Orçamento" : "Pedido"} #${props.route.params?.order?.number}` })
+        props.navigation.setOptions({
+            title: `${props.route.params?.order?.type === "budget" ? "Orçamento" : "Pedido"} #${props.route.params?.order?.number}`,
+        })
     }, [props.navigation])
 
     return (
@@ -68,7 +73,7 @@ export const ProductFormScreen: React.FC<ProductFormScreenProps> = (props) => {
 
             <Text style={[{ alignSelf: "flex-end" }]}>Subtotal: {currencyMask(formik.values.quantity * formik.values.unit_price)}</Text>
             <Button mode="contained" onPress={() => formik.handleSubmit()} loading={formik.isSubmitting} disabled={formik.isSubmitting}>
-                Adicionar Produto
+                Salvar
             </Button>
         </ScrollView>
     )

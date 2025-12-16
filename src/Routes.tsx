@@ -7,10 +7,11 @@ import { NavigationProp, RouteProp } from "@react-navigation/native"
 import { OrderScreen } from "./Screens/OrderScreen/OrderScreen"
 import { Order } from "./types/server/class/Order"
 import { ProductFormScreen } from "./Screens/OrderScreen/ProductFormScreen"
+import { Item } from "./types/server/class/Item"
 
 interface RoutesProps {}
 
-export type RoutePaylod = { id?: string; order?: Order } | undefined
+export type RoutePaylod = { id?: string; order?: Order; product?: Item } | undefined
 export type ScreenNames = ["Home", "OrderForm", "Order", "ProductForm"]
 export type RootStackParamList = Record<ScreenNames[number], RoutePaylod>
 export type StackNavigation = NavigationProp<RootStackParamList>
