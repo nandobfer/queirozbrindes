@@ -77,31 +77,28 @@ export const OrderScreen: React.FC<OrderScreenProps> = (props) => {
                         </IconedText>
                     </View>
 
-                    <Text variant="titleMedium">{order.customer.company_name}</Text>
+                    {order.customer.company_name && <Text variant="titleMedium">{order.customer.company_name}</Text>}
 
-                    <IconedText variant="titleMedium" icon={"domain"}>
-                        {order.customer.cnpj}
-                    </IconedText>
+                    {order.customer.cnpj && (
+                        <IconedText variant="titleMedium" icon={"domain"}>
+                            {order.customer.cnpj}
+                        </IconedText>
+                    )}
 
-                    <IconedText variant="titleMedium" icon={"phone"}>
-                        {order.customer.phone}
-                    </IconedText>
+                    {order.customer.phone && (
+                        <IconedText variant="titleMedium" icon={"phone"}>
+                            {order.customer.phone}
+                        </IconedText>
+                    )}
 
-                    <Text variant="titleMedium">Insc. Estadual: {order.customer.state_registration}</Text>
+                    {order.customer.state_registration && <Text variant="titleMedium">Insc. Estadual: {order.customer.state_registration}</Text>}
 
                     <Divider />
 
                     <IconedText variant="titleSmall" icon="map-marker">
-                        {order.customer.street}
+                        {order.customer.street || "Localização"}
                     </IconedText>
                     <Text variant="titleSmall"> {[order.customer.neighborhood, order.customer.city, stateName?.label].join(", ")} </Text>
-
-                    <Divider />
-
-                    <IconedText icon="cash" variant="titleLarge">
-                        {currencyMask(totalValue)}
-                    </IconedText>
-                    <Text variant="titleSmall">Condições de pagamento: {order.payment_terms}</Text>
 
                     {(order.delivery_date?.from || order.delivery_date?.to) && (
                         <>
@@ -165,6 +162,16 @@ export const OrderScreen: React.FC<OrderScreenProps> = (props) => {
                     )}
 
                     <NewProductButton order={order} onSubmit={refetch} />
+                </View>
+            }
+            ListFooterComponent={
+                <View style={[{ gap: 10, marginBottom: 10 }]}>
+                    <Divider />
+
+                    <IconedText icon="cash" variant="titleLarge">
+                        {currencyMask(totalValue)}
+                    </IconedText>
+                    {order.payment_terms && <Text variant="titleSmall">Condições de pagamento: {order.payment_terms}</Text>}
                 </View>
             }
         />
