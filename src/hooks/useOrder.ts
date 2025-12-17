@@ -12,6 +12,7 @@ import { StackNavigation } from "../Routes"
 
 export const useOrder = (order: Order) => {
     const [deleting, setDeleting] = useState(false)
+    const [generatingPdf, setGeneratingPdf] = useState(false)
     const [viewingMediaMenu, setViewingMediaMenu] = useState(false)
     const [gallery, setGallery] = useState(order.images)
     const [uploadingImages, setUploadingImages] = useState(false)
@@ -131,6 +132,23 @@ export const useOrder = (order: Order) => {
         }
     }
 
+    const generatePdf = async () => {
+        if (generatingPdf) return
+        setGeneratingPdf(true)
+        try {
+            const response = await api.get<string>("/order/pdf", {
+                params: { order_id: order.id },
+            })
+
+            console.log("PDF generated:", response.data)
+            return response.data
+        } catch (error) {
+            console.log("Error generating PDF:", error)
+        } finally {
+            setGeneratingPdf(false)
+        }
+    }
+
     useEffect(() => {
         setGallery(order.images)
     }, [order.images])
@@ -151,5 +169,7 @@ export const useOrder = (order: Order) => {
         totalValue,
         deleteImage,
         setUploadingImages,
+        generatingPdf,
+        generatePdf,
     }
 }
