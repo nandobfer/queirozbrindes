@@ -14,13 +14,13 @@
 		96905EF65AED1B983A6B3ABC /* libPods-QueirozBrindes.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-QueirozBrindes.a */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
-		36A6B87FB44947928906C6AA /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D323182A1004601B42C5B85 /* noop-file.swift */; };
-		CBDF6DA19B46460FB748FEBE /* FoundersGroteskBOZ-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = A0F8DD35091E47D29F63D021 /* FoundersGroteskBOZ-Regular.otf */; };
-		800ECC10A3964B47AD003235 /* FoundersGroteskBOZ-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 638165A10C764B69A38197C6 /* FoundersGroteskBOZ-Bold.otf */; };
-		0ED5875F24C74FAF8AF21841 /* FoundersGroteskXCondBOZ-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6EDBD713A6E547EBA0724AD2 /* FoundersGroteskXCondBOZ-Bold.otf */; };
-		673EBF77838F470BB803A136 /* FoundersGrotesk-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = CD1AD0128FE34107A1A11543 /* FoundersGrotesk-Regular.otf */; };
-		CD52CF67562A4D8A94AA4A1C /* FoundersGrotesk-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = D798752717AE4C408CB5C308 /* FoundersGrotesk-Bold.otf */; };
-		9F1C156882054492BA2FDCF1 /* FoundersGroteskXCond-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 89BFD0E6EEE3470896683351 /* FoundersGroteskXCond-Bold.otf */; };
+		4120B482E79047809DE8B251 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 262F4046443B44239A575646 /* noop-file.swift */; };
+		C728E0BE20C243FFB00AC20C /* FoundersGroteskBOZ-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = E9BF068BD6C8431881206BBE /* FoundersGroteskBOZ-Regular.otf */; };
+		299A3CC176B643A5B8DFFF11 /* FoundersGroteskBOZ-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 57DCE63E9E074E04BB5C8B06 /* FoundersGroteskBOZ-Bold.otf */; };
+		E81BA3863F75491D828A407B /* FoundersGroteskXCondBOZ-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 24DC1CDFA36144FB9B82848B /* FoundersGroteskXCondBOZ-Bold.otf */; };
+		D425B0BC068549CDAC07F4F5 /* FoundersGrotesk-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 5141B7A36033464883C769FE /* FoundersGrotesk-Regular.otf */; };
+		E2BCFE9CA2234BDA9937994E /* FoundersGrotesk-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = C89141DF89C24B31A685F087 /* FoundersGrotesk-Bold.otf */; };
+		BE92D0CA124F4879AA9055C7 /* FoundersGroteskXCond-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 70884DE6A1A649A6B18E837D /* FoundersGroteskXCond-Bold.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,14 +37,14 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-QueirozBrindes/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
-		4D323182A1004601B42C5B85 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "QueirozBrindes/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
-		45F3C24E589E42599772DF9D /* QueirozBrindes-Bridging-Header.h */ = {isa = PBXFileReference; name = "QueirozBrindes-Bridging-Header.h"; path = "QueirozBrindes/QueirozBrindes-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
-		A0F8DD35091E47D29F63D021 /* FoundersGroteskBOZ-Regular.otf */ = {isa = PBXFileReference; name = "FoundersGroteskBOZ-Regular.otf"; path = "../assets/fonts/custom/FoundersGroteskBOZ-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		638165A10C764B69A38197C6 /* FoundersGroteskBOZ-Bold.otf */ = {isa = PBXFileReference; name = "FoundersGroteskBOZ-Bold.otf"; path = "../assets/fonts/custom/FoundersGroteskBOZ-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		6EDBD713A6E547EBA0724AD2 /* FoundersGroteskXCondBOZ-Bold.otf */ = {isa = PBXFileReference; name = "FoundersGroteskXCondBOZ-Bold.otf"; path = "../assets/fonts/custom/FoundersGroteskXCondBOZ-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		CD1AD0128FE34107A1A11543 /* FoundersGrotesk-Regular.otf */ = {isa = PBXFileReference; name = "FoundersGrotesk-Regular.otf"; path = "../assets/fonts/FoundersGrotesk-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		D798752717AE4C408CB5C308 /* FoundersGrotesk-Bold.otf */ = {isa = PBXFileReference; name = "FoundersGrotesk-Bold.otf"; path = "../assets/fonts/FoundersGrotesk-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		89BFD0E6EEE3470896683351 /* FoundersGroteskXCond-Bold.otf */ = {isa = PBXFileReference; name = "FoundersGroteskXCond-Bold.otf"; path = "../assets/fonts/FoundersGroteskXCond-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		262F4046443B44239A575646 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "QueirozBrindes/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		0646851E62D84BFEB4962AFD /* QueirozBrindes-Bridging-Header.h */ = {isa = PBXFileReference; name = "QueirozBrindes-Bridging-Header.h"; path = "QueirozBrindes/QueirozBrindes-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		E9BF068BD6C8431881206BBE /* FoundersGroteskBOZ-Regular.otf */ = {isa = PBXFileReference; name = "FoundersGroteskBOZ-Regular.otf"; path = "../assets/fonts/custom/FoundersGroteskBOZ-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		57DCE63E9E074E04BB5C8B06 /* FoundersGroteskBOZ-Bold.otf */ = {isa = PBXFileReference; name = "FoundersGroteskBOZ-Bold.otf"; path = "../assets/fonts/custom/FoundersGroteskBOZ-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		24DC1CDFA36144FB9B82848B /* FoundersGroteskXCondBOZ-Bold.otf */ = {isa = PBXFileReference; name = "FoundersGroteskXCondBOZ-Bold.otf"; path = "../assets/fonts/custom/FoundersGroteskXCondBOZ-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5141B7A36033464883C769FE /* FoundersGrotesk-Regular.otf */ = {isa = PBXFileReference; name = "FoundersGrotesk-Regular.otf"; path = "../assets/fonts/FoundersGrotesk-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C89141DF89C24B31A685F087 /* FoundersGrotesk-Bold.otf */ = {isa = PBXFileReference; name = "FoundersGrotesk-Bold.otf"; path = "../assets/fonts/FoundersGrotesk-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		70884DE6A1A649A6B18E837D /* FoundersGroteskXCond-Bold.otf */ = {isa = PBXFileReference; name = "FoundersGroteskXCond-Bold.otf"; path = "../assets/fonts/FoundersGroteskXCond-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,8 +69,8 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
-				4D323182A1004601B42C5B85 /* noop-file.swift */,
-				45F3C24E589E42599772DF9D /* QueirozBrindes-Bridging-Header.h */,
+				262F4046443B44239A575646 /* noop-file.swift */,
+				0646851E62D84BFEB4962AFD /* QueirozBrindes-Bridging-Header.h */,
 			);
 			name = QueirozBrindes;
 			sourceTree = "<group>";
@@ -100,7 +100,7 @@
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
-				A6E6A44A6DF945408C0C759D /* Resources */,
+				C79232410A4E4D998B522FD5 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -149,15 +149,15 @@
 			name = ExpoModulesProviders;
 			sourceTree = "<group>";
 		};
-		A6E6A44A6DF945408C0C759D /* Resources */ = {
+		C79232410A4E4D998B522FD5 /* Resources */ = {
 			isa = "PBXGroup";
 			children = (
-				A0F8DD35091E47D29F63D021 /* FoundersGroteskBOZ-Regular.otf */,
-				638165A10C764B69A38197C6 /* FoundersGroteskBOZ-Bold.otf */,
-				6EDBD713A6E547EBA0724AD2 /* FoundersGroteskXCondBOZ-Bold.otf */,
-				CD1AD0128FE34107A1A11543 /* FoundersGrotesk-Regular.otf */,
-				D798752717AE4C408CB5C308 /* FoundersGrotesk-Bold.otf */,
-				89BFD0E6EEE3470896683351 /* FoundersGroteskXCond-Bold.otf */,
+				E9BF068BD6C8431881206BBE /* FoundersGroteskBOZ-Regular.otf */,
+				57DCE63E9E074E04BB5C8B06 /* FoundersGroteskBOZ-Bold.otf */,
+				24DC1CDFA36144FB9B82848B /* FoundersGroteskXCondBOZ-Bold.otf */,
+				5141B7A36033464883C769FE /* FoundersGrotesk-Regular.otf */,
+				C89141DF89C24B31A685F087 /* FoundersGrotesk-Bold.otf */,
+				70884DE6A1A649A6B18E837D /* FoundersGroteskXCond-Bold.otf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -225,13 +225,13 @@
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
-				184A82A980524B4184BFFA8C /* QueirozBrindes-Bridging-Header.h in Resources */,
-				CBDF6DA19B46460FB748FEBE /* FoundersGroteskBOZ-Regular.otf in Resources */,
-				800ECC10A3964B47AD003235 /* FoundersGroteskBOZ-Bold.otf in Resources */,
-				0ED5875F24C74FAF8AF21841 /* FoundersGroteskXCondBOZ-Bold.otf in Resources */,
-				673EBF77838F470BB803A136 /* FoundersGrotesk-Regular.otf in Resources */,
-				CD52CF67562A4D8A94AA4A1C /* FoundersGrotesk-Bold.otf in Resources */,
-				9F1C156882054492BA2FDCF1 /* FoundersGroteskXCond-Bold.otf in Resources */,
+				A931F5F8CAB544FDBEC261E8 /* QueirozBrindes-Bridging-Header.h in Resources */,
+				C728E0BE20C243FFB00AC20C /* FoundersGroteskBOZ-Regular.otf in Resources */,
+				299A3CC176B643A5B8DFFF11 /* FoundersGroteskBOZ-Bold.otf in Resources */,
+				E81BA3863F75491D828A407B /* FoundersGroteskXCondBOZ-Bold.otf in Resources */,
+				D425B0BC068549CDAC07F4F5 /* FoundersGrotesk-Regular.otf in Resources */,
+				E2BCFE9CA2234BDA9937994E /* FoundersGrotesk-Bold.otf in Resources */,
+				BE92D0CA124F4879AA9055C7 /* FoundersGroteskXCond-Bold.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,7 +307,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
-				36A6B87FB44947928906C6AA /* noop-file.swift in Sources */,
+				4120B482E79047809DE8B251 /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
