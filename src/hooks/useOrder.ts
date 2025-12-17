@@ -1,23 +1,27 @@
 import { useEffect, useState } from "react"
 import { Attachment, Order } from "../types/server/class/Order"
 import { api } from "../backend/api"
-import { ImagePickerAsset, MediaTypeOptions } from "expo-image-picker"
+import * as ImagePicker from "expo-image-picker"
 import { getFilename, pickMedia } from "../tools/pickMedia"
 import { uid } from "uid"
 import { animate } from "../tools/animate"
 import { estados } from "../tools/estadosBrasil"
 import { AxiosError } from "axios"
+import { useNavigation } from "@react-navigation/native"
+import { StackNavigation } from "../Routes"
 
 export const useOrder = (order: Order) => {
     const [deleting, setDeleting] = useState(false)
     const [viewingMediaMenu, setViewingMediaMenu] = useState(false)
     const [gallery, setGallery] = useState(order.images)
     const [uploadingImages, setUploadingImages] = useState(false)
+    const [status, requestPermission] = ImagePicker.useCameraPermissions()
 
+    const navigation = useNavigation<StackNavigation>()
     const stateName = estados.find((item) => item.value === order.customer.state)
     const totalValue = order.items.reduce((acc, item) => acc + item.quantity * item.unit_price, 0)
 
-    const uploadImages = async (images: ImagePickerAsset[], attachments: Attachment[]) => {
+    const uploadImages = async (images: ImagePicker.ImagePickerAsset[], attachments: Attachment[]) => {
         if (uploadingImages) return
         setUploadingImages(true)
         try {
@@ -43,6 +47,26 @@ export const useOrder = (order: Order) => {
         }
     }
 
+    const handleImagePickerAsset = async (result: ImagePicker.ImagePickerAsset[]) => {
+        const attachments: Attachment[] = []
+        result.forEach(async (media, index) => {
+            const filename = getFilename(media)
+            attachments.push({
+                filename,
+                url: media.uri,
+                height: media.height,
+                width: media.width,
+                id: uid(),
+            })
+        })
+        console.log(attachments)
+        animate()
+        setGallery([...gallery, ...attachments])
+
+        // send to backend
+        await uploadImages(result, attachments)
+    }
+
     const deleteImage = async (attachment: Attachment) => {
         animate()
         setGallery((prev) => prev.filter((item) => item.id !== attachment.id))
@@ -53,32 +77,35 @@ export const useOrder = (order: Order) => {
         }
     }
 
-    const handleCameraPress = () => {
+    const handleCameraPress = async () => {
+        if (!status?.granted) {
+            const permission = await requestPermission()
+            if (!permission.granted) {
+                return
+            }
+        }
         setViewingMediaMenu(false)
+        try {
+            const result = (await ImagePicker.launchCameraAsync({ allowsEditing: true })).assets
+            if (result) {
+                handleImagePickerAsset(result)
+            }
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const handleGalleryPress = async () => {
         setViewingMediaMenu(false)
         try {
-            const result = await pickMedia(undefined, true, MediaTypeOptions.Images)
-            if (result) {
-                const attachments: Attachment[] = []
-                result.forEach(async (media, index) => {
-                    const filename = getFilename(media)
-                    attachments.push({
-                        filename,
-                        url: media.uri,
-                        height: media.height,
-                        width: media.width,
-                        id: uid(),
-                    })
+            const result = (
+                await ImagePicker.launchImageLibraryAsync({
+                    allowsMultipleSelection: true,
                 })
-                console.log(attachments)
-                animate()
-                setGallery([...gallery, ...attachments])
+            ).assets
 
-                // send to backend
-                await uploadImages(result, attachments)
+            if (result) {
+                handleImagePickerAsset(result)
             }
         } catch (error) {
             if (error instanceof AxiosError) {
@@ -90,6 +117,7 @@ export const useOrder = (order: Order) => {
 
     const handleDrawPress = () => {
         setViewingMediaMenu(false)
+        navigation.navigate("Draw", { order })
     }
 
     const deleteOrder = async () => {
