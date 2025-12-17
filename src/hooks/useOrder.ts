@@ -21,7 +21,7 @@ export const useOrder = (order: Order) => {
     const stateName = estados.find((item) => item.value === order.customer.state)
     const totalValue = order.items.reduce((acc, item) => acc + item.quantity * item.unit_price, 0)
 
-    const uploadImages = async (images: ImagePicker.ImagePickerAsset[], attachments: Attachment[]) => {
+    const uploadImages = async (images: { uri: string; mimeType?: string }[], attachments: Attachment[]) => {
         if (uploadingImages) return
         setUploadingImages(true)
         try {
@@ -150,5 +150,6 @@ export const useOrder = (order: Order) => {
         stateName,
         totalValue,
         deleteImage,
+        setUploadingImages,
     }
 }
