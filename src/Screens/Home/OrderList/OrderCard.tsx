@@ -41,8 +41,8 @@ export const OrderCard: React.FC<OrderCardProps> = (props) => {
             overshootRight={false}
             overshootLeft={false}
             friction={2}
-            leftThreshold={50}
-            rightThreshold={50}
+            leftThreshold={100}
+            rightThreshold={100}
             containerStyle={{ overflow: "visible" }}
         >
             <Surface style={[{ padding: 20, borderRadius: 8, gap: 10 }]}>
@@ -60,12 +60,16 @@ export const OrderCard: React.FC<OrderCardProps> = (props) => {
                     {props.order.customer.name}
                 </IconedText>
 
-                <IconedText variant="titleMedium" icon={"domain"}>
-                    {props.order.customer.cnpj}
-                </IconedText>
+                {props.order.customer.cnpj && (
+                    <IconedText variant="titleMedium" icon={"domain"}>
+                        {props.order.customer.cnpj}
+                    </IconedText>
+                )}
 
                 <View style={[{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" }]}>
-                    <Text variant="titleLarge">Total: {currencyMask(totalValue)}</Text>
+                    <IconedText size={20} variant="titleLarge" icon="cash-multiple">
+                        {currencyMask(totalValue)}
+                    </IconedText>
                     <Button mode="contained" onPress={() => navigation.navigate("Order", { order: props.order })}>
                         Ver detalhes
                     </Button>
