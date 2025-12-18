@@ -168,7 +168,7 @@ export const OrderScreen: React.FC<OrderScreenProps> = (props) => {
                 <View style={[{ gap: 10, marginBottom: 10 }]}>
                     <Divider />
 
-                    <IconedText icon="cash" variant="titleLarge">
+                    <IconedText icon="cash-multiple" variant="titleLarge">
                         {currencyMask(totalValue)}
                     </IconedText>
                     {order.payment_terms && <Text variant="titleSmall">Condições de pagamento: {order.payment_terms}</Text>}
