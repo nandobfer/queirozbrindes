@@ -2,6 +2,7 @@ import React from "react"
 import { View } from "react-native"
 import { ProgressBar, Surface, Text, TouchableRipple, useTheme } from "react-native-paper"
 import { Customer } from "../../types/server/class/Customer"
+import { CustomerSuggestionCard } from "./CustomerSuggestionCard"
 
 interface CustomerSuggestionsProps {
     customers: Customer[]
@@ -45,29 +46,7 @@ export const CustomerSuggestions: React.FC<CustomerSuggestionsProps> = (props) =
             )}
             {props.loading && <ProgressBar indeterminate color={theme.colors.primary} />}
             {props.customers.map((item, index) => (
-                <TouchableRipple
-                    key={item.id}
-                    onPress={() => props.onSelect(item)}
-                    style={{
-                        paddingHorizontal: 10,
-                        paddingVertical: 5,
-                        gap: 10,
-                    }}
-                >
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            borderTopWidth: index === 0 ? undefined : 1,
-                            borderTopColor: theme.colors.outline,
-                            paddingTop: index === 0 ? undefined : 5,
-                        }}
-                    >
-                        <Text variant="titleLarge">{item.name}</Text>
-                        <Text variant="titleSmall">{item.cnpj}</Text>
-                    </View>
-                </TouchableRipple>
+                <CustomerSuggestionCard key={item.id} customer={item} index={index} onSelect={props.onSelect} />
             ))}
         </Surface>
     )
